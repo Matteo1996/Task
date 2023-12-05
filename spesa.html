@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista della Spesa</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 20px;
+            background-color: #f7f7f7;
+            color: #333;
+        }
+
+        #shopping-list {
+            max-width: 600px;
+            margin: auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1, h2 {
+            color: #4caf50;
+        }
+
+        form {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #555;
+        }
+
+        input[type="text"] {
+            width: calc(100% - 12px);
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            background-color: #4caf50;
+            color: #fff;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px; /* Aggiunto margine a destra */
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #list-container {
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #f4f4f4;
+        }
+
+        #item-list {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            display: flex;
+            align-items: center;
+            justify-content: space-between; /* Nuovo */
+            margin-bottom: 15px;
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        input[type="checkbox"] {
+            margin-right: 10px;
+        }
+
+        label.completed {
+            text-decoration: line-through;
+            color: #888;
+        }
+
+        .remove-button {
+            background-color: #ff6961;
+            color: #fff;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .remove-button:hover {
+            background-color: #ff4541;
+        }
+    </style>
+</head>
+<body>
+    <div id="shopping-list">
+        <h1 style="text-align: center;">Lista della Spesa</h1>
+        <form id="shopping-form">
+            <label for="item">Nuovo Elemento:</label>
+            <input type="text" id="item" required placeholder="Aggiungi un oggetto">
+            <button type="button" onclick="addItem()">Aggiungi</button>
+        </form>
+
+        <div id="list-container">
+            <h2>Lista</h2>
+            <ul id="item-list"></ul>
+        </div>
+
+        <br>
+        <button class="remove-button" onclick="removeSelected()">Rimuovi Selezionato</button>
+        <button class="remove-button" onclick="removeAll()">Rimuovi Tutti</button>
+    </div>
+
+    <script>
+        // Funzione per caricare la lista salvata in localStorage
+        window.onload = function() {
+            var savedList = localStorage.getItem('shoppingList');
+            if (savedList) {
+                document.getElementById('item-list').innerHTML = savedList;
+                addCheckboxEventListeners();
+            }
+        };
+
+        function addItem() {
+            var newItem = document.getElementById('item').value;
+            if (newItem.trim() !== '') {
+                var itemList = document.getElementById('item-list');
+                var li = document.createElement('li');
+                var checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.id = 'item-' + (itemList.children.length + 1);
+                li.appendChild(checkbox);
+
+                var label = document.createElement('label');
+                label.htmlFor = checkbox.id;
+                label.textContent = newItem;
+                li.appendChild(label);
+
+                itemList.appendChild(li);
+                document.getElementById('item').value = '';
+
+                // Salva la lista in localStorage
+                saveList();
+            }
+        }
+
+        function removeSelected() {
+            var checkboxes = document.querySelectorAll('#item-list input[type="checkbox"]:checked');
+            checkboxes.forEach(function(checkbox) {
+                checkbox.parentElement.remove();
+            });
+
+            // Salva la lista in localStorage dopo la rimozione
+            saveList();
+        }
+
+        function removeAll() {
+            document.getElementById('item-list').innerHTML = '';
+
+            // Salva la lista vuota in localStorage
+            saveList();
+        }
+
+        // Funzione per salvare la lista in localStorage
+        function saveList() {
+            var itemList = document.getElementById('item-list').innerHTML;
+            localStorage.setItem('shoppingList', itemList);
+            addCheckboxEventListeners();
+        }
+
+        // Aggiunge gli eventi click per le checkbox
+        function addCheckboxEventListeners() {
+            var checkboxes = document.querySelectorAll('#item-list input[type="checkbox"]');
+            checkboxes.forEach(function(checkbox) {
+                checkbox.addEventListener('click', saveList);
+            });
+        }
+
+        function addCheckboxEventListeners() {
+        // Select all checkboxes within the #item-list
+        var checkboxes = document.querySelectorAll('#item-list input[type="checkbox"]');
+
+        // Add event listeners to each checkbox
+        checkboxes.forEach(function(checkbox) {
+        checkbox.addEventListener('change', saveListToLocalStorage);
+        });
+    }
+    </script>
+</body>
+</html>
